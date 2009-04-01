@@ -54,7 +54,7 @@ package twitter.api {
 		private static const LOAD_FRIENDS_URL:String = 
 			"http://twitter.com/statuses/friends/$userId.xml";
 		private static const LOAD_FRIENDS_TIMELINE_URL:String = 
-			"http://twitter.com/statuses/friends_timeline/$userId.xml";
+			"http://twitter.com/statuses/friends_timeline.xml";
 		private static const PUBLIC_TIMELINE_URL:String = 
 			"http://twitter.com/statuses/public_timeline.xml"
 		private static const LOAD_USER_TIMELINE_URL:String = 
@@ -191,10 +191,11 @@ package twitter.api {
 		/**
 		* Loads the timeline of all friends on Twitter. Authentication required for private users.
 		*/
-		public function loadFriendsTimeline(userId:String):void
+		public function loadFriendsTimeline(count:int=20):void
 		{
 			var friendsTimelineLoader:URLLoader = this.getLoader(FRIENDS_TIMELINE);
-			friendsTimelineLoader.load(twitterRequest(LOAD_FRIENDS_TIMELINE_URL.replace("$userId",userId)));
+			// friendsTimelineLoader.load(twitterRequest(LOAD_FRIENDS_TIMELINE_URL.replace("$userId",userId)));
+			friendsTimelineLoader.load(twitterRequest(LOAD_FRIENDS_TIMELINE_URL+'?count='+count));
 		}
 		/**
 		* Loads the timeline of all public users on Twitter.
@@ -311,10 +312,10 @@ package twitter.api {
 			}		
 		}
 		
-		public function search(query:TwitterSearch):void
+		public function search(query:TwitterSearch, count:int=20, since_id:uint=0):void
 		{
 			var searchLoader:URLLoader = this.getLoader(SEARCH);
-			var url:String = SEARCH_URL + query.queryString;
+			var url:String = SEARCH_URL + query.queryString + '&rpp=' + count + '&since_id='+since_id;
 			/*
 			var r:URLRequest = new URLRequest (url);
 			if (this.authorizationHeader){
@@ -531,7 +532,10 @@ package twitter.api {
 				var entry:Object = {};
 				var idStr:String = entryXml.atom::id;
 				var idx:int = idStr.lastIndexOf(':');
-				entry.id = Number(idStr.substring(idx+1, idStr.length-1));
+				entry.id = Number(idStr.substring(idx+1, idStr.length));
+				// FIXED BUG: idStr.length - 1 was cutting off the last digit of the number
+        // mc 4/1/2009
+				// trace(' idStr ' + idStr + ', idx ' + idx + ' , entry.id ' + entry.id);
 				entry.text = entryXml.atom::title;
 				entry.created_at = entryXml.atom::updated;
 				entry.user = entryXml.atom::author.atom::name;
@@ -650,7 +654,7 @@ package twitter.api {
 			}
 			*/
 			var r:URLRequest = new URLRequest (url);
-			// trace(url);
+			trace(url);
 			if (this.authorizationHeader){
 				r.requestHeaders = [this.authorizationHeader];	
 			}
