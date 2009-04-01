@@ -533,7 +533,7 @@ package twitter.api {
 				var idStr:String = entryXml.atom::id;
 				var idx:int = idStr.lastIndexOf(':');
 				entry.id = Number(idStr.substring(idx+1, idStr.length));
-				// FIXED BUG: idStr.length - 1 was cutting off the last digit of the number
+				// FIXED BUG: idStr.length - 1 was cutting off the last digit of ids
         // mc 4/1/2009
 				// trace(' idStr ' + idStr + ', idx ' + idx + ' , entry.id ' + entry.id);
 				entry.text = entryXml.atom::title;
