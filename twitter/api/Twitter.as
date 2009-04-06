@@ -283,10 +283,10 @@ package twitter.api {
 			featuredLoader.load(twitterRequest(FEATURED_USERS_URL));
 		}
 		
-		public function loadDirectMessages():void
+		public function loadDirectMessages(since_id:uint=0):void
 		{
 			var dmLoader:URLLoader = this.getLoader(GET_DIRECT_MESSAGES);
-			dmLoader.load(twitterRequest(GET_DIRECT_MSGS_URL));
+			dmLoader.load(twitterRequest(GET_DIRECT_MSGS_URL+'?since_id'+since_id));
 		}
 		
 		public function sendDirectMessage(recipientScreenName:String, message:String):void
