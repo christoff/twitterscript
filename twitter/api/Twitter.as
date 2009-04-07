@@ -286,7 +286,7 @@ package twitter.api {
 		public function loadDirectMessages(since_id:uint=0):void
 		{
 			var dmLoader:URLLoader = this.getLoader(GET_DIRECT_MESSAGES);
-			dmLoader.load(twitterRequest(GET_DIRECT_MSGS_URL+'?since_id'+since_id));
+			dmLoader.load(twitterRequest(GET_DIRECT_MSGS_URL+'since_id='+since_id));
 		}
 		
 		public function sendDirectMessage(recipientScreenName:String, message:String):void
