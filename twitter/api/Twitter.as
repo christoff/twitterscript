@@ -102,11 +102,13 @@ package twitter.api {
 		
 		// internal variables
 		private var loaders:Array;
+		private var source:String;
+		
 		// for auth
 		private var authorizationHeader:URLRequestHeader;
 		private var useHttps:Boolean = false;
 		
-		function Twitter() 
+		function Twitter(src:String=null) 
 		{
 			loaders = [];
 			this.addLoader(FRIENDS, friendsHandler);
@@ -131,6 +133,9 @@ package twitter.api {
 			this.addLoader(SHOW_INFO, showInfoHandler);
 			this.addLoader(FRIENDS_IDS, friendsIdsHandler);
 			this.addLoader(FOLLOWERS_IDS, followersIdsHandler);
+			
+			// set source
+			source = src;
 		}
 	
 		// Public API
@@ -234,6 +239,7 @@ package twitter.api {
 				request.method = "POST"
 				var variables : URLVariables = new URLVariables ();
 				variables.status = statusString;
+				if(this.source) variables.source = this.source;
 				request.data = variables;
 				try
 				{
