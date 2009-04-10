@@ -225,8 +225,12 @@ package twitter.api {
 		public function follow(userId:String):void
 		{
 			var req:URLRequest = twitterRequest(FOLLOW_USER_URL.replace("$userId",userId));
-			req.method = "POST";
-			this.getLoader(FOLLOW_USER).load(req);
+			req.method = URLRequestMethod.POST;
+			var variables : URLVariables = new URLVariables();
+      if(this.source) variables.source = this.source;
+			req.data = variables;
+			var loader:URLLoader = this.getLoader(FOLLOW_USER);
+			loader.load(req);
 		}
 		/**
 		* Sets user's Twitter status. Authentication required.
@@ -237,14 +241,14 @@ package twitter.api {
 			{
 				var request : URLRequest = twitterRequest (SET_STATUS_URL);
 				request.method = "POST"
-				var variables : URLVariables = new URLVariables ();
+				var variables : URLVariables = new URLVariables();
 				variables.status = statusString;
 				if(this.source) variables.source = this.source;
 				request.data = variables;
 				try
 				{
-					this.getLoader(SET_STATUS).load (request);
-				} catch (error : Error)
+					this.getLoader(SET_STATUS).load(request);
+				} catch(error : Error)
 				{
 					trace ("Unable to set status");
 				}
@@ -440,7 +444,7 @@ package twitter.api {
 		}
 		
 		private function friendCreatedHandler (e:Event) : void{
-			trace("Friend created " + this.getLoader(FOLLOW_USER).data);
+			// trace("Friend created " + this.getLoader(FOLLOW_USER).data);
 		}
 		
 		private function showStatusHandler(e:Event):void
