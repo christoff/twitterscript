@@ -51,6 +51,8 @@ package twitter.api {
 		private static const FRIENDS_IDS:String = "friends/ids";
 		private static const FOLLOWERS_IDS:String = "followers/ids";
 		
+		private static const MENTIONS:String = "mentions";
+		
 		private static const LOAD_FRIENDS_URL:String = 
 			"http://twitter.com/statuses/friends/$userId.xml";
 		private static const LOAD_FRIENDS_TIMELINE_URL:String = 
@@ -95,6 +97,9 @@ package twitter.api {
 			"http://twitter.com/friends/ids/${id}.xml";
 		private static const FOLLOWERS_IDS_URL:String = 
 			"http://twitter.com/followers/ids/${id}.xml";
+			
+		private static const GET_MENTIONS_URL:String = 
+			"http://twitter.com/statuses/mentions.xml?";	
 		
 		private static const LITE:String = "lite=true";
 		private static const PAGE:String = "page=$page";
@@ -133,6 +138,8 @@ package twitter.api {
 			this.addLoader(SHOW_INFO, showInfoHandler);
 			this.addLoader(FRIENDS_IDS, friendsIdsHandler);
 			this.addLoader(FOLLOWERS_IDS, followersIdsHandler);
+			
+			this.addLoader(MENTIONS, mentionsHandler);
 			
 			// set source
 			source = src;
@@ -297,6 +304,12 @@ package twitter.api {
 		{
 			var dmLoader:URLLoader = this.getLoader(GET_DIRECT_MESSAGES);
 			dmLoader.load(twitterRequest(GET_DIRECT_MSGS_URL+'since_id='+since_id));
+		}
+		
+		public function loadMentions(since_id:uint=0):void
+		{
+			var loader:URLLoader = this.getLoader(MENTIONS);
+			loader.load(twitterRequest(GET_MENTIONS_URL+'since_id='+since_id));
 		}
 		
 		public function sendDirectMessage(recipientScreenName:String, message:String):void
@@ -465,6 +478,19 @@ package twitter.api {
 				statusArray.push(new TwitterStatus(reply));
 			}
 			var twitterEvent:TwitterEvent = new TwitterEvent(TwitterEvent.ON_REPLIES);
+			twitterEvent.data = statusArray;
+			dispatchEvent(twitterEvent);
+		}
+		
+		private function mentionsHandler(e:Event):void
+		{
+			var xml:XML = new XML(this.getLoader(MENTIONS).data);
+			var statusArray:Array = [];
+			for each(var mention:XML in xml.children())
+			{
+				statusArray.push(new TwitterStatus(mention));
+			}
+			var twitterEvent:TwitterEvent = new TwitterEvent(TwitterEvent.ON_MENTIONS);
 			twitterEvent.data = statusArray;
 			dispatchEvent(twitterEvent);
 		}
